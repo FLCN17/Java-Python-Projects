@@ -1,4 +1,3 @@
-#Cory Cothrum
 #Rock Paper Scissors Game - Adv.
 
 #Main() runs menu, repeat loop, and end message. can set number of games, difficulty
