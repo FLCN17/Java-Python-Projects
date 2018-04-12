@@ -1,95 +1,125 @@
+import java.util.Random;
 
-public class allWorkNoPlay {
+/** AllWorkAndNoPlayMakesJackADullBoy -
+ * @author flcn
+ * 
+ * outputs the pages from Jacks story in The Shining, with proper typos and formatting.
+ * Warning: The entire program /is/ a memory leak
+ */
+public class AllWorkNoPlayMakesJackADullBoy {
 
+	static Random rand = new Random();
+	static int storyLength; //static so the triangle output can mess wit it. real bad i know...
+	
+	/** Jack -
+	 * Sends his story to the typewriter for as long as he is within the overlook hotel.
+	 */
 	public static void jack() {
-		int atOverlook = 1, spacing = 1, mode = 0;
-		String story = "All work and no play makes jack a dull boy";
-		while(atOverlook == 1)
+		boolean atOverlook = true;
+		String story = "All work and no play makes jack a dull boy"; //do you like my story, Wendy?
+		while(atOverlook) {
 			typeWriter(story);
+		}
 	}
 	
-	public static String typeWriter(String story) {
-		/*
-		 *  if lines:
-        message = "     " + message + "     " # replace with a spacing padder; decides indent and fills to next line?
-        print(allWorkNoPlayLines(message))
-        for i in range(spacing):
-            print("")        
-    else:
-        print(allWorkNoPlayParagraphs(message))
-        for i in range(spacing):
-            print("")
-		 */
-		if(lines == )
-		return story;
+	/** Typewriter -
+	 * 
+	 * Takes story, decides the amount of pages and lines to use for an output mode, as well as indent and spacing
+	 * Also handles resetting the storylength for the triangle output mode
+	 * 
+	 * @param story - original story
+	 */
+	public static void typeWriter(String story) {
+		//grab pages, decide spacing and mode per output cycle, determine cycles, and determine errors per cycle, repeat
+		int pages, indent = 0, mode, lines = 0, spacing = rand.nextInt(3);
+		pages = rand.nextInt(20); //how many 'pages' of whatever mode selected to type out
+		//get mode
+		storyLength = story.length();
+		mode = rand.nextInt(4); //randomly choose next 'mode'
+		switch(mode) {
+		case 0:				//lined output
+			indent = rand.nextInt(7);
+			lines = rand.nextInt(80);
+			break;
+		case 1:				//paragraph
+			indent = 0;
+			lines = rand.nextInt(40);
+			break;
+		case 2:				//poetry
+			indent = rand.nextInt(7) + 5;
+			lines = rand.nextInt(10);
+			break;
+		case 3:				//triangle
+			indent = rand.nextInt(4) + 8;
+			spacing = 0;
+			pages = rand.nextInt(5);
+			lines = rand.nextInt(20);
+			break;
+		}
+		for(int x = pages; x-- > 0;) {
+			for(int l = lines + 40; l-- > 0;) {
+				System.out.print(overlookHotel(story, mode, (mode == 3 ? indent++ : indent), spacing));
+				if(storyLength == 0) { //for triangle output, to 'reset' in between calls
+					storyLength = story.length();
+					System.out.println("");
+					indent = rand.nextInt(4) + 8;
+				}
+			}
+		}
+	}
+	
+	/** OverlookHotel -
+	 * 
+	 * takes a story, and begins passing it to the 'output', adding typos and other maddness using a convoluted system of rands.
+	 * 
+	 * @param story - original story
+	 * @param mode - output format
+	 * @param indent - indent before line
+	 * @param spacing - line spacing
+	 * @return String fixedStory - altered story
+	 */
+	public static String overlookHotel(String story, int mode, int indent, int spacing) {
+		String alphabet = "abcdefghijklmnopqrstuvwxyz,.;:()'?!$%&*#", storyFixed = "";
+		int typoRate, caseRate;
+		for(int i = (mode == 0 ? (rand.nextInt(7) == 0 ? indent + rand.nextInt(5) : indent ) : indent); i-- > 0;)
+			storyFixed += " "; //add indent
+		for(int curChar = 0; curChar < storyLength; curChar++) {
+			typoRate = rand.nextInt(1000);
+			caseRate = rand.nextInt(200)+1;
+			if(mode == 2 && rand.nextInt(100) == 0) { //poetry output - randomly make new lines
+				storyFixed += "\n";
+				for(int r = indent + rand.nextInt(8); r-- > 0;)
+					storyFixed += " "; //add random indent to poetry
+			}
+			if(typoRate >= 5) //5/typoRate chance of typos -within the remaining, however, theres a 1/caserate chance of caps		
+				storyFixed += (rand.nextInt(caseRate) == 0 ? story.toUpperCase().charAt(curChar): story.charAt(curChar));
+			else if (typoRate >= 2) { // 2/typorate chance of random space added/instead
+				storyFixed += " ";
+				curChar-= (rand.nextInt(3)==0 ? 0 : 1);
+			}
+			else //1/typorate chance of real typo
+				storyFixed += (rand.nextInt(caseRate) == 0 ? alphabet.toUpperCase().charAt(rand.nextInt(alphabet.length())): alphabet.charAt(rand.nextInt(alphabet.length())));
+		}
+		if(mode == 0 || mode == 2 || mode == 3)
+			storyFixed += "\n";
+		else {
+			storyFixed += (rand.nextInt(25) == 0 ? "? " : ( rand.nextInt(25) == 0 ? "! " : ". ")); //end of paragraph punctuation
+			if(rand.nextInt(5) == 0) {
+				storyFixed += "\n";
+				if(rand.nextInt(2) == 0)
+					storyFixed += "\n";
+				for(int r = rand.nextInt(6)+1; r-- > 0;)
+					storyFixed += " ";
+			}
+		}
+		if(mode == 3)
+			storyLength--;
+		for(int s = spacing; s-- > 0;)
+			System.out.println("");
+		return storyFixed;
 	}
 	
 	public static void main(String[] args) {
 		jack();
-		/*
-
-def allWorkNoPlayLines(message):
-    #generates lines of typo'd text from an alphabet pool
-    capitalError = 10
-    firstTypo = 5
-    secondTypo = 10
-    thirdTypo = 15
-    skippedLine = 50
-    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz     .,:';?/=+1234567890" + '"'
-    #message = (' '*rn.randint(0, 3))*rn.randint(0, 4) + message
-    if (not rn.randint(0, firstTypo)):
-        if (not rn.randint(0, skippedLine)):
-            message = ""
-        else:
-            index = rn.randint(0, len(message))
-            if rn.randint(0, 2) == 1:
-                message = message[:index] + alphabet[rn.randint(0, len(alphabet)-1)] + message[index+1:]
-            else:
-                message = message[:index] + alphabet[rn.randint(0, len(alphabet)-1)] + message[index:]
-        if (not rn.randint(0, secondTypo)):
-            if (not rn.randint(0, skippedLine)):
-                message = ""
-            else:                
-                index = rn.randint(0, len(message))
-                if rn.randint(0, 1):
-                    message = message[:index] + alphabet[rn.randint(0, len(alphabet)-1)] + message[index+1:]
-                else:
-                    message = message[:index] + alphabet[rn.randint(0, len(alphabet)-1)] + message[index:] 
-            if (not rn.randint(0, thirdTypo)):
-                if (not rn.randint(0, skippedLine)):
-                    message = ""
-                else:                    
-                    index = rn.randint(0, len(message))
-                    if rn.randint(0, 1):
-                        message = message[:index] + alphabet[rn.randint(0, len(alphabet)-1)] + message[index+1:]
-                    else:
-                        message = message[:index] + alphabet[rn.randint(0, len(alphabet)-1)] + message[index:]
-        
-    return message
-
-def allWorkNoPlayParagraphs(message):
-    paragraph = ' '*rn.randint(0, 8)
-    if rn.randint(0, 10):
-        message += '.'
-    if rn.randint(0, 3):
-        message += ' '
-    lines = rn.randint(0, 15) 
-    if rn.randint(0, 20):
-        for i in range(lines):
-            if not rn.randint(0, 3):
-                paragraph += allWorkNoPlayLines(message.upper())
-            else:
-                paragraph += allWorkNoPlayLines(message)
-    else:
-        for i in range(lines):
-            if not rn.randint(0, 3):
-                paragraph += "\t\t" + allWorkNoPlayLines(message.upper()) + "\n"
-            else:
-                paragraph += "\t\t" + allWorkNoPlayLines(message) + "\n"
-    return paragraph
-
-jack()
-		 */
 	}
-
 }
